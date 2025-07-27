@@ -2,6 +2,10 @@ from flask import request, jsonify
 from app import app
 from db_config import get_connection
 
+@app.route('/')
+def home():
+    return "Distributor Service API is running!"
+
 @app.route("/inventory", methods=["GET"])
 def get_inventory():
     try:
