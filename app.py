@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify
 import jwt
 from functools import wraps
 from db_config import get_connection
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 AUTH_SECRET = "your_auth_secret"
 
 def token_required(f):
