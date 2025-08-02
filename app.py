@@ -4,7 +4,7 @@ import mysql.connector
 from db_config import get_db_connection
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["*"])
 
 #  GET Distributor Stock
 @app.route('/stock/<int:distributor_id>', methods=['GET'])
