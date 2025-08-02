@@ -1,15 +1,14 @@
-import os
-from dotenv import load_dotenv
 import mysql.connector
 
-load_dotenv()
+db_config = {
+    'host': 'cozycomfort-gihansubodha-soc.c.aivencloud.com',
+    'port': 26728,
+    'user': 'avnadmin',
+    'password': 'AVNS_i33CBpI3jeyig2mnoMR',
+    'database': 'defaultdb',
+    'ssl_disabled': False
+}
 
-def get_connection():
-    return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        port=int(os.getenv("DB_PORT")),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME"),
-        ssl_disabled=False
-    )
+def get_db_connection():
+    conn = mysql.connector.connect(**db_config)
+    return conn
