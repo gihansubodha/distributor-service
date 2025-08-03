@@ -4,7 +4,7 @@ import mysql.connector
 from db_config import get_db_connection
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["*"])
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 #  GET Distributor Stock
 @app.route('/stock/<int:distributor_id>', methods=['GET'])
@@ -104,6 +104,16 @@ def check_low_stock(distributor_id):
     low_stock = cursor.fetchall()
     conn.close()
     return jsonify({"low_stock": low_stock})
+
+@app.route('/all', methods=['GET'])
+def get_all_distributors():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id, name FROM distributors")  # make sure your DB table/columns match
+    distributors = cursor.fetchall()
+    conn.close()
+    return jsonify(distributors)
+
 
 if __name__ == '__main__':
     import os
