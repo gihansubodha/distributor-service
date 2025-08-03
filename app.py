@@ -109,10 +109,16 @@ def check_low_stock(distributor_id):
 def get_all_distributors():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id, name FROM distributors")  # make sure your DB table/columns match
+    cursor.execute("SELECT id, username AS name FROM users WHERE role='distributor'")
     distributors = cursor.fetchall()
     conn.close()
     return jsonify(distributors)
+
+
+#  Health check
+@app.route('/', methods=['GET'])
+def health():
+    return jsonify({"status": "Auth Service Running"})
 
 
 if __name__ == '__main__':
