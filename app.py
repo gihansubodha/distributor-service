@@ -124,6 +124,9 @@ def get_all_distributors():
     conn.close()
     return jsonify(distributors)
 
+@app.route('/routes', methods=['GET'])
+def list_routes():
+    return jsonify([rule.rule for rule in app.url_map.iter_rules()])
 
 #  Health check
 @app.route('/', methods=['GET'])
