@@ -16,7 +16,7 @@ def apply_cors(response):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return response
 
-#  GET Distributor Stock
+# ✅ GET Distributor Stock
 @app.route('/stock/<int:distributor_id>', methods=['GET'])
 def get_distributor_stock(distributor_id):
     conn = get_db_connection()
@@ -26,7 +26,7 @@ def get_distributor_stock(distributor_id):
     conn.close()
     return jsonify(stock)
 
-#  ADD New Stock Item
+# ✅ ADD New Stock Item
 @app.route('/stock', methods=['POST'])
 def add_distributor_stock():
     data = request.json
@@ -37,13 +37,15 @@ def add_distributor_stock():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO distributor_stock (distributor_id, blanket_model, quantity, min_required) VALUES (%s, %s, %s, %s)",
-                   (distributor_id, blanket_model, quantity, min_required))
+    cursor.execute("""
+        INSERT INTO distributor_stock (distributor_id, blanket_model, quantity, min_required) 
+        VALUES (%s, %s, %s, %s)
+    """, (distributor_id, blanket_model, quantity, min_required))
     conn.commit()
     conn.close()
-    return jsonify({"msg": "Distributor stock item added"})
+    return jsonify({"msg": "Distributor stock item added to database"})
 
-#  UPDATE Stock Quantity
+# ✅ UPDATE Stock Quantity
 @app.route('/stock/<int:stock_id>', methods=['PUT'])
 def update_distributor_stock(stock_id):
     data = request.json
@@ -56,7 +58,7 @@ def update_distributor_stock(stock_id):
     conn.close()
     return jsonify({"msg": "Distributor stock updated"})
 
-#  DELETE Stock Item
+# ✅ DELETE Stock Item
 @app.route('/stock/<int:stock_id>', methods=['DELETE'])
 def delete_distributor_stock(stock_id):
     conn = get_db_connection()
@@ -66,17 +68,22 @@ def delete_distributor_stock(stock_id):
     conn.close()
     return jsonify({"msg": "Distributor stock item deleted"})
 
-#  GET Seller Requests (Dashboard)
+# ✅ GET Seller Requests with Seller Names
 @app.route('/seller-requests/<int:distributor_id>', methods=['GET'])
 def get_seller_requests(distributor_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM seller_requests WHERE distributor_id=%s ORDER BY created_at DESC", (distributor_id,))
+    cursor.execute("""
+        SELECT sr.id, sr.blanket_model, sr.quantity, sr.status, u.username AS seller_name
+        FROM seller_requests sr
+        JOIN users u ON sr.seller_id = u.id
+        WHERE sr.distributor_id=%s ORDER BY sr.created_at DESC
+    """, (distributor_id,))
     requests = cursor.fetchall()
     conn.close()
     return jsonify(requests)
 
-#  UPDATE Seller Request Status
+# ✅ UPDATE Seller Request Status
 @app.route('/seller-requests/<int:request_id>', methods=['PUT'])
 def update_seller_request_status(request_id):
     data = request.json
@@ -87,9 +94,9 @@ def update_seller_request_status(request_id):
     cursor.execute("UPDATE seller_requests SET status=%s WHERE id=%s", (status, request_id))
     conn.commit()
     conn.close()
-    return jsonify({"msg": "Seller request status updated"})
+    return jsonify({"msg": f"Seller request marked as {status}"})
 
-# SEND Stock Request to Manufacturer
+# ✅ SEND Stock Request to Manufacturer
 @app.route('/request-manufacturer', methods=['POST'])
 def request_manufacturer():
     data = request.json
@@ -103,9 +110,9 @@ def request_manufacturer():
                    (distributor_id, blanket_model, quantity))
     conn.commit()
     conn.close()
-    return jsonify({"msg": "Stock request sent to manufacturer"})
+    return jsonify({"msg": "Distributor stock request saved to database"})
 
-# CHECK Low Stock
+# ✅ CHECK Low Stock
 @app.route('/check-low-stock/<int:distributor_id>', methods=['GET'])
 def check_low_stock(distributor_id):
     conn = get_db_connection()
@@ -115,6 +122,7 @@ def check_low_stock(distributor_id):
     conn.close()
     return jsonify({"low_stock": low_stock})
 
+# ✅ ALL Distributors
 @app.route('/all', methods=['GET'])
 def get_all_distributors():
     conn = get_db_connection()
@@ -124,17 +132,16 @@ def get_all_distributors():
     conn.close()
     return jsonify(distributors)
 
+# ✅ Debug Route
 @app.route('/routes', methods=['GET'])
 def list_routes():
     return jsonify([rule.rule for rule in app.url_map.iter_rules()])
 
-#  Health check
+# ✅ Health check
 @app.route('/', methods=['GET'])
 def health():
     return jsonify({"status": "Distributor Service Running"})
 
-
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
