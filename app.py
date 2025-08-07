@@ -6,7 +6,7 @@ from db_config import get_db_connection
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
-# ✅ GET Distributor Stock
+#  GET Distributor Stock
 @app.route('/stock/<int:distributor_id>', methods=['GET'])
 def get_distributor_stock(distributor_id):
     conn = get_db_connection()
@@ -16,7 +16,7 @@ def get_distributor_stock(distributor_id):
     conn.close()
     return jsonify(stock)
 
-# ✅ ADD New Stock Item (with model_number, price)
+#  ADD New Stock Item (with model_number, price)
 @app.route('/stock', methods=['POST'])
 def add_distributor_stock():
     data = request.json or {}
@@ -40,7 +40,7 @@ def add_distributor_stock():
     conn.close()
     return jsonify({"msg": "Distributor stock item added"})
 
-# ✅ UPDATE Stock Quantity (kept simple)
+#  UPDATE Stock Quantity (kept simple)
 @app.route('/stock/<int:stock_id>', methods=['PUT'])
 def update_distributor_stock(stock_id):
     data = request.json or {}
@@ -56,7 +56,7 @@ def update_distributor_stock(stock_id):
     conn.close()
     return jsonify({"msg": "Distributor stock updated"})
 
-# ✅ DELETE Stock Item
+#  DELETE Stock Item
 @app.route('/stock/<int:stock_id>', methods=['DELETE'])
 def delete_distributor_stock(stock_id):
     conn = get_db_connection()
@@ -66,7 +66,7 @@ def delete_distributor_stock(stock_id):
     conn.close()
     return jsonify({"msg": "Distributor stock item deleted"})
 
-# ✅ GET Seller Requests (Dashboard)
+#  GET Seller Requests (Dashboard)
 @app.route('/seller-requests/<int:distributor_id>', methods=['GET'])
 def get_seller_requests(distributor_id):
     conn = get_db_connection()
@@ -82,7 +82,7 @@ def get_seller_requests(distributor_id):
     conn.close()
     return jsonify(requests)
 
-# ✅ UPDATE Seller Request Status
+#  UPDATE Seller Request Status
 @app.route('/seller-requests/<int:request_id>', methods=['PUT'])
 def update_seller_request_status(request_id):
     data = request.json or {}
@@ -97,7 +97,7 @@ def update_seller_request_status(request_id):
     conn.close()
     return jsonify({"msg": "Seller request status updated"})
 
-# ✅ SEND Stock Request to Manufacturer (unchanged payload)
+#  SEND Stock Request to Manufacturer (unchanged payload)
 @app.route('/request-manufacturer', methods=['POST'])
 def request_manufacturer():
     data = request.json or {}
@@ -118,7 +118,7 @@ def request_manufacturer():
     conn.close()
     return jsonify({"msg": "Stock request sent to manufacturer"})
 
-# ✅ CHECK Low Stock
+#  CHECK Low Stock
 @app.route('/check-low-stock/<int:distributor_id>', methods=['GET'])
 def check_low_stock(distributor_id):
     conn = get_db_connection()
@@ -132,7 +132,7 @@ def check_low_stock(distributor_id):
     conn.close()
     return jsonify({"low_stock": low_stock})
 
-# ✅ List all distributors (for seller dropdown)
+#  List all distributors (for seller dropdown)
 @app.route('/all', methods=['GET'])
 def get_all_distributors():
     conn = get_db_connection()
@@ -142,7 +142,7 @@ def get_all_distributors():
     conn.close()
     return jsonify(distributors)
 
-# ✅ Health check
+#  Health check
 @app.route('/', methods=['GET'])
 def health():
     return jsonify({"status": "Distributor Service Running"})
